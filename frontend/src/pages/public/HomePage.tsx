@@ -147,17 +147,44 @@ const stats = [
   },
 ]
 
+function HomeCardSkeleton() {
+  return (
+    <div
+      className="
+        overflow-hidden
+        rounded-2xl
+        border
+        border-white/[0.07]
+        bg-[#0a0e24]
+      "
+    >
+      <div className="aspect-[16/10] animate-pulse bg-white/[0.04]" />
+
+      <div className="space-y-3 p-4">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-white/[0.06]" />
+        <div className="h-3 w-full animate-pulse rounded bg-white/[0.04]" />
+        <div className="h-3 w-2/3 animate-pulse rounded bg-white/[0.04]" />
+
+        <div className="mt-4 flex justify-between">
+          <div className="h-7 w-20 animate-pulse rounded-lg bg-violet-500/[0.08]" />
+          <div className="h-7 w-14 animate-pulse rounded-lg bg-white/[0.04]" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function HomePage() {
   /* ==========================================================
      API DATA
   ========================================================== */
-  const { data } = useAsyncData(
+  const { data, loading } = useAsyncData(
     async () => {
       const [
         eventsBody,
         rewardsBody,
       ]: any[] = await Promise.all([
-        api('/events?limit=4'),
+        api('/events?limit=6'),
         api('/rewards'),
       ])
 
@@ -166,13 +193,13 @@ export function HomePage() {
           eventsBody?.data?.items || []
         )
           .map(mapEvent)
-          .slice(0, 4),
+          .slice(0, 6),
 
         rewards: (
           rewardsBody?.data || []
         )
           .map(mapReward)
-          .slice(0, 4),
+          .slice(0, 6),
       }
     },
     []
@@ -1024,7 +1051,7 @@ export function HomePage() {
       >
         <div className="mx-auto max-w-[1240px]">
           {/* SECTION HEADING */}
-          <div className="mb-5 flex items-end justify-between gap-3 sm:mb-7">
+          <div className="mb-5 sm:mb-7">
             <div>
               <div className="flex items-center gap-2">
                 <span className="grid h-7 w-7 place-items-center rounded-lg bg-violet-500/10 text-violet-400 sm:h-8 sm:w-8">
@@ -1045,30 +1072,10 @@ export function HomePage() {
                 and campus experiences.
               </p>
             </div>
-
-            <Link
-              to="/events"
-              className="
-                flex
-                shrink-0
-                items-center
-                gap-1
-                text-[11px]
-                font-bold
-                text-violet-400
-                transition
-                hover:text-violet-300
-                sm:text-sm
-              "
-            >
-              View all
-
-              <ArrowRight size={14} />
-            </Link>
           </div>
 
-          {/* EVENTS */}
-          {data?.events?.length ? (
+          {/* EVENT CARDS */}
+          {loading ? (
             <div
               className="
                 grid
@@ -1079,19 +1086,66 @@ export function HomePage() {
                 xl:gap-5
               "
             >
-              {data.events.map(
-                (event: any) => (
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className={`min-w-0 ${index >= 4 ? 'hidden lg:block' : ''}`}
+                >
+                  <HomeCardSkeleton />
+                </div>
+              ))}
+            </div>
+          ) : data?.events?.length ? (
+            <>
+              <div
+                className="
+                  grid
+                  grid-cols-2
+                  gap-2.5
+                  sm:gap-4
+                  lg:grid-cols-3
+                  xl:gap-5
+                "
+              >
+                {data.events.map((event: any, index: number) => (
                   <div
                     key={event.id}
-                    className="min-w-0"
+                    className={`min-w-0 ${index >= 4 ? 'hidden lg:block' : ''}`}
                   >
-                    <EventCard
-                      event={event}
-                    />
+                    <EventCard event={event} />
                   </div>
-                )
-              )}
-            </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Link
+                  to="/events"
+                  className="
+                    inline-flex
+                    h-11
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-violet-500/25
+                    bg-violet-500/[0.08]
+                    px-6
+                    text-[12px]
+                    font-bold
+                    text-violet-300
+                    transition
+                    hover:border-violet-400/40
+                    hover:bg-violet-500/[0.14]
+                    hover:text-white
+                    sm:text-sm
+                  "
+                >
+                  View More Events
+                  <ArrowRight size={15} />
+                </Link>
+              </div>
+            </>
           ) : (
             <div
               className="
@@ -1131,7 +1185,7 @@ export function HomePage() {
 
         <div className="relative mx-auto max-w-[1240px]">
           {/* SECTION HEADING */}
-          <div className="mb-5 flex items-end justify-between gap-3 sm:mb-7">
+          <div className="mb-5 sm:mb-7">
             <div>
               <div className="flex items-center gap-2">
                 <span className="grid h-7 w-7 place-items-center rounded-lg bg-fuchsia-500/10 text-fuchsia-400 sm:h-8 sm:w-8">
@@ -1152,30 +1206,10 @@ export function HomePage() {
                 redeem exciting rewards.
               </p>
             </div>
-
-            <Link
-              to="/rewards"
-              className="
-                flex
-                shrink-0
-                items-center
-                gap-1
-                text-[11px]
-                font-bold
-                text-fuchsia-400
-                transition
-                hover:text-fuchsia-300
-                sm:text-sm
-              "
-            >
-              View all
-
-              <ArrowRight size={14} />
-            </Link>
           </div>
 
           {/* REWARD CARDS */}
-          {data?.rewards?.length ? (
+          {loading ? (
             <div
               className="
                 grid
@@ -1186,19 +1220,66 @@ export function HomePage() {
                 xl:gap-5
               "
             >
-              {data.rewards.map(
-                (reward: any) => (
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className={`min-w-0 ${index >= 4 ? 'hidden lg:block' : ''}`}
+                >
+                  <HomeCardSkeleton />
+                </div>
+              ))}
+            </div>
+          ) : data?.rewards?.length ? (
+            <>
+              <div
+                className="
+                  grid
+                  grid-cols-2
+                  gap-2.5
+                  sm:gap-4
+                  lg:grid-cols-3
+                  xl:gap-5
+                "
+              >
+                {data.rewards.map((reward: any, index: number) => (
                   <div
                     key={reward.id}
-                    className="min-w-0"
+                    className={`min-w-0 ${index >= 4 ? 'hidden lg:block' : ''}`}
                   >
-                    <RewardCard
-                      reward={reward}
-                    />
+                    <RewardCard reward={reward} />
                   </div>
-                )
-              )}
-            </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Link
+                  to="/rewards"
+                  className="
+                    inline-flex
+                    h-11
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-fuchsia-500/25
+                    bg-fuchsia-500/[0.07]
+                    px-6
+                    text-[12px]
+                    font-bold
+                    text-fuchsia-300
+                    transition
+                    hover:border-fuchsia-400/40
+                    hover:bg-fuchsia-500/[0.12]
+                    hover:text-white
+                    sm:text-sm
+                  "
+                >
+                  View More Rewards
+                  <ArrowRight size={15} />
+                </Link>
+              </div>
+            </>
           ) : (
             <div
               className="
@@ -1221,4 +1302,3 @@ export function HomePage() {
     </>
   )
 }
-
