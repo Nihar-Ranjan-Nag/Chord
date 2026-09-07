@@ -37,30 +37,17 @@ export function PublicLayout() {
   const closeMenu = () => setOpen(false)
 
   return (
-    <div
-      className="
-        fixed
-        inset-0
-        bg-[#050818]
-        text-white
-      "
-    >
+    <div className="min-h-screen bg-[#050818] text-white">
       {/* =====================================================
-          MAIN PAGE SCROLLER
+          NORMAL PAGE LAYOUT
+
+          IMPORTANT:
+          - no fixed page wrapper
+          - no absolute page scroller
+          - browser handles normal scrolling
+          - footer naturally stays at bottom
       ===================================================== */}
-      <div
-        className="
-          absolute
-          inset-0
-
-          overflow-x-hidden
-          overflow-y-auto
-
-          overscroll-y-contain
-
-          [-webkit-overflow-scrolling:touch]
-        "
-      >
+      <div className="flex min-h-screen flex-col overflow-x-hidden">
         {/* =====================================================
             NAVBAR
         ===================================================== */}
@@ -71,6 +58,8 @@ export function PublicLayout() {
             z-50
 
             w-full
+
+            shrink-0
 
             border-b
             border-white/[0.06]
@@ -261,8 +250,12 @@ export function PublicLayout() {
 
         {/* =====================================================
             PAGE
+
+            flex-1 is the important sticky-footer fix.
+            If page content is short this section fills the
+            remaining viewport and pushes footer to bottom.
         ===================================================== */}
-        <main className="relative w-full">
+        <main className="relative w-full flex-1">
           <Outlet />
         </main>
 
@@ -270,24 +263,6 @@ export function PublicLayout() {
             FOOTER
         ===================================================== */}
         <PublicFooter />
-
-        {/* =====================================================
-            MOBILE ONLY END SPACE
-
-            This was previously showing on desktop too.
-        ===================================================== */}
-        <div
-          aria-hidden="true"
-          className="
-            h-[90px]
-
-            min-[380px]:h-[110px]
-
-            sm:h-14
-
-            lg:hidden
-          "
-        />
       </div>
 
       {/* =====================================================

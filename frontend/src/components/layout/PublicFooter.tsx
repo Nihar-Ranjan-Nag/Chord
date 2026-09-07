@@ -16,8 +16,11 @@ export function PublicFooter() {
       className="
         relative
         w-full
+        shrink-0
+
         border-t
         border-white/[0.06]
+
         bg-[#050716]
       "
     >
@@ -33,7 +36,9 @@ export function PublicFooter() {
       <div
         className="
           relative
+
           mx-auto
+
           w-full
           max-w-[1240px]
 
@@ -58,7 +63,9 @@ export function PublicFooter() {
         <div
           className="
             relative
+
             mb-7
+
             overflow-hidden
 
             rounded-[18px]
@@ -133,6 +140,7 @@ export function PublicFooter() {
             <p
               className="
                 mt-2
+
                 max-w-[540px]
 
                 text-[11px]
@@ -249,7 +257,7 @@ export function PublicFooter() {
         </div>
 
         {/* =====================================================
-            DESKTOP BRAND + LINKS
+            BRAND + LINKS
         ===================================================== */}
         <div
           className="
@@ -269,6 +277,7 @@ export function PublicFooter() {
             <p
               className="
                 mt-3
+
                 max-w-[390px]
 
                 text-[11px]
@@ -573,8 +582,10 @@ export function PublicFooter() {
         <div
           className="
             mt-6
+
             border-t
             border-white/[0.06]
+
             pt-4
 
             lg:mt-7
@@ -645,25 +656,6 @@ export function PublicFooter() {
             </div>
           </div>
         </div>
-
-        {/* =====================================================
-            MOBILE ONLY SAFE SPACE
-
-            IMPORTANT:
-            hidden on desktop
-        ===================================================== */}
-        <div
-          aria-hidden="true"
-          className="
-            h-[70px]
-
-            min-[380px]:h-[80px]
-
-            sm:h-12
-
-            lg:hidden
-          "
-        />
       </div>
     </footer>
   )
