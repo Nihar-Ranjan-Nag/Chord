@@ -47,13 +47,14 @@ export function PublicLayout() {
           - browser handles normal scrolling
           - footer naturally stays at bottom
       ===================================================== */}
-      <div className="flex min-h-screen flex-col overflow-x-hidden">
+      <div className="flex min-h-screen flex-col overflow-x-clip pt-[68px]">
         {/* =====================================================
             NAVBAR
         ===================================================== */}
         <header
           className="
-            sticky
+            fixed
+            inset-x-0
             top-0
             z-50
 
@@ -67,6 +68,10 @@ export function PublicLayout() {
             bg-[#050716]/95
 
             backdrop-blur-xl
+
+            shadow-[0_8px_30px_rgba(0,0,0,0.22)]
+
+            supports-[backdrop-filter]:bg-[#050716]/85
           "
         >
           <div
