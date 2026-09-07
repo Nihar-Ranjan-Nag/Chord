@@ -80,7 +80,7 @@ const steps = [
 ============================================================ */
 const rewardProgression = [
   {
-    points: '200 PTS',
+    points: '2000 PTS',
     image: headPhoneImage,
     alt: 'Headphones reward',
     borderClass: 'border-blue-500/30',
@@ -89,7 +89,7 @@ const rewardProgression = [
     arrowClass: 'text-blue-500',
   },
   {
-    points: '500 PTS',
+    points: '5000 PTS',
     image: bottleImage,
     alt: 'Bottle reward',
     borderClass: 'border-cyan-500/30',
@@ -98,7 +98,7 @@ const rewardProgression = [
     arrowClass: 'text-cyan-500',
   },
   {
-    points: '800 PTS',
+    points: '8000 PTS',
     image: bagImage,
     alt: 'Bag reward',
     borderClass: 'border-violet-500/30',
@@ -107,7 +107,7 @@ const rewardProgression = [
     arrowClass: 'text-violet-500',
   },
   {
-    points: '1200 PTS',
+    points: '12000 PTS',
     image: giftImage,
     alt: 'Gift reward',
     borderClass: 'border-fuchsia-500/30',
