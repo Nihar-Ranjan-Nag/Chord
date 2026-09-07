@@ -1,5 +1,6 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1'
+  import.meta.env.VITE_API_BASE_URL ||
+  'https://chord-kx3t.onrender.com/api/v1'
 
 const ACCESS_TOKEN_KEY = 'campusspark_access_token'
 const REFRESH_TOKEN_KEY = 'campusspark_refresh_token'
