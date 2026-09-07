@@ -1,0 +1,7 @@
+import {CalendarDays,Coins,PackageCheck,Users} from 'lucide-react'
+import {ApiError,ApiLoading} from '@/components/common/ApiState'
+import {PageHeading} from '@/components/common/PageHeading'
+import {StatCard} from '@/components/ui/StatCard'
+import {useAsyncData} from '@/hooks/useAsyncData'
+import {api} from '@/services/api'
+export function ReportsPage(){const {data,loading,error}=useAsyncData(async()=>{const b:any=await api('/dashboard/admin',{auth:true});return b.data.stats},[]);if(loading)return <ApiLoading/>;if(error||!data)return <ApiError message={error||'Unable to load reports'}/>;return <><PageHeading eyebrow="REPORTS" title="Operational report" description="This page uses only the live aggregate data currently provided by the backend."/><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><StatCard label="Students" value={data.totalStudents} icon={<Users size={21}/>}/><StatCard label="Registrations" value={data.totalRegistrations} icon={<CalendarDays size={21}/>}/><StatCard label="Points distributed" value={data.pointsDistributed} icon={<Coins size={21}/>}/><StatCard label="Delivered rewards" value={data.deliveredRedemptions} icon={<PackageCheck size={21}/>}/></div><div className="mt-6 rounded-2xl border border-violet-100 bg-violet-50/50 p-5 text-sm leading-6 text-violet-800">Historical month-by-month charts are intentionally not fabricated. Add a reporting endpoint to the backend when you want time-series analytics.</div></>}

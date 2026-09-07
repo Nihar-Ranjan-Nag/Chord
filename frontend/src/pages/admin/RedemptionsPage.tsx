@@ -1,0 +1,12 @@
+import {Badge} from '@/components/ui/Badge'
+import {ApiError,ApiLoading,EmptyState} from '@/components/common/ApiState'
+import {PageHeading} from '@/components/common/PageHeading'
+import {TableShell,Table,THead,TH,TD} from '@/components/common/DataTable'
+import {useAsyncData} from '@/hooks/useAsyncData'
+import {api} from '@/services/api'
+import {mapRedemption} from '@/services/mappers'
+export function RedemptionsPage(){
+  const {data,loading,error,refresh}=useAsyncData(async()=>{const b:any=await api('/admin/redemptions',{auth:true});return(b.data||[]).map(mapRedemption)},[])
+  async function change(id:string,status:'APPROVED'|'REJECTED'|'DELIVERED'){const note=status==='REJECTED'?window.prompt('Reason for rejection (optional):')||undefined:status==='DELIVERED'?window.prompt('Delivery note (optional):')||undefined:undefined;await api(`/admin/redemptions/${id}/status`,{method:'PATCH',auth:true,body:JSON.stringify({status,note})});await refresh()}
+  return <><PageHeading eyebrow="REDEMPTIONS" title="Reward requests" description="Approve, reject and deliver real redemption requests." />{loading&&<ApiLoading/>}{error&&<ApiError message={error}/>} {!loading&&!error&&(data||[]).length===0&&<EmptyState title="No redemptions" message="No students have requested rewards."/>}{(data||[]).length>0&&<TableShell><Table><THead><tr><TH>Student</TH><TH>Reward</TH><TH>Points</TH><TH>Requested</TH><TH>Status</TH><TH>Actions</TH></tr></THead><tbody>{(data||[]).map(item=><tr key={item.id}><TD><strong className="block text-slate-800">{item.user?.name}</strong><small className="mt-1 block text-xs text-slate-400">{item.user?.email}</small></TD><TD>{item.reward?.name||item.rewardId}</TD><TD>{item.points}</TD><TD>{new Date(item.requestedAt).toLocaleString()}</TD><TD><Badge tone={item.status==='delivered'||item.status==='approved'?'green':item.status==='rejected'?'red':'blue'}>{item.status}</Badge></TD><TD><div className="flex gap-3">{item.status==='pending'&&<><button className="text-xs font-bold text-emerald-600" onClick={()=>change(item.id,'APPROVED')}>Approve</button><button className="text-xs font-bold text-red-600" onClick={()=>change(item.id,'REJECTED')}>Reject</button></>}{item.status==='approved'&&<button className="whitespace-nowrap text-xs font-bold text-violet-600" onClick={()=>change(item.id,'DELIVERED')}>Mark delivered</button>}</div></TD></tr>)}</tbody></Table></TableShell>}</>
+}

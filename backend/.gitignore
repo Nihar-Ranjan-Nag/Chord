@@ -1,0 +1,21 @@
+node_modules
+dist
+.env
+*.log
+.DS_Store
+coverage
+
+# User uploaded media: keep folders, never commit uploaded files.
+uploads/*
+!uploads/profiles/
+!uploads/events/
+!uploads/rewards/
+!uploads/books/
+uploads/profiles/*
+uploads/events/*
+uploads/rewards/*
+uploads/books/*
+!uploads/profiles/.gitkeep
+!uploads/events/.gitkeep
+!uploads/rewards/.gitkeep
+!uploads/books/.gitkeep

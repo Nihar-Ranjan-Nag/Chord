@@ -1,0 +1,327 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  COMPLETED
+  CANCELLED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  ATTENDED
+  COMPLETED
+  CANCELLED
+}
+
+enum PointType {
+  CREDIT
+  DEBIT
+}
+
+enum PointSourceType {
+  EVENT_REGISTRATION
+  EVENT_ATTENDANCE
+  EVENT_COMPLETION
+  REFERRAL
+  BONUS
+  ADMIN_ADJUSTMENT
+  REDEMPTION
+  REVERSAL
+}
+
+enum RewardStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum RedemptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DELIVERED
+  CANCELLED
+}
+
+enum BookStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum BorrowStatus {
+  BORROWED
+  RETURN_REQUESTED
+  RETURNED
+  DID_NOT_RETURN
+  CANCELLED
+}
+
+enum BorrowPaymentStatus {
+  PAID
+  REFUNDED
+  FORFEITED
+}
+
+model User {
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  email               String                @unique
+  passwordHash        String
+  role                Role                  @default(USER)
+  status              UserStatus            @default(ACTIVE)
+  phone               String?
+  dateOfBirth         DateTime?             @db.Date
+  college             String?
+  course              String?
+  yearOfStudy         Int?
+  avatarUrl           String?
+  pointsBalance       Int                   @default(0)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  registrations       EventRegistration[]
+  pointTransactions   PointTransaction[]
+  redemptions         RewardRedemption[]
+  notifications       Notification[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  createdEvents       Event[]               @relation("EventCreator")
+  adminPointActions   PointTransaction[]    @relation("PointCreatedBy")
+  adminRedemptions    RewardRedemption[]    @relation("RedemptionReviewedBy")
+  createdBooks        Book[]                @relation("BookCreator")
+  bookBorrows         BookBorrow[]          @relation("BookBorrower")
+  reviewedBookBorrows BookBorrow[]          @relation("BookBorrowReviewedBy")
+}
+
+model EventCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  events    Event[]
+}
+
+model Event {
+  id                   Int                 @id @default(autoincrement())
+  title                String
+  slug                 String              @unique
+  description          String              @db.Text
+  shortDescription     String?
+  bannerUrl            String?
+  categoryId           Int?
+  organizer            String?
+  location             String?
+  isOnline             Boolean             @default(false)
+  meetingUrl           String?
+  startAt               DateTime
+  endAt                 DateTime
+  registrationStartsAt DateTime?
+  registrationEndsAt   DateTime?
+  capacity              Int?
+  participationPoints  Int                 @default(0)
+  attendancePoints     Int                 @default(0)
+  completionPoints     Int                 @default(0)
+  status                EventStatus         @default(DRAFT)
+  terms                 String?             @db.Text
+  createdById           Int
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  category      EventCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdBy     User               @relation("EventCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  registrations EventRegistration[]
+
+  @@index([status, startAt])
+  @@index([categoryId])
+  @@index([createdById])
+}
+
+model EventRegistration {
+  id           Int                @id @default(autoincrement())
+  userId       Int
+  eventId      Int
+  status       RegistrationStatus @default(REGISTERED)
+  registeredAt DateTime           @default(now())
+  attendedAt   DateTime?
+  completedAt  DateTime?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([eventId, status])
+}
+
+model Book {
+  id            Int        @id @default(autoincrement())
+  title         String
+  author        String?
+  isbn          String?
+  description   String?    @db.Text
+  coverUrl      String?
+  depositAmount Decimal    @db.Decimal(10, 2)
+  stock         Int        @default(1)
+  status        BookStatus @default(ACTIVE)
+  createdById   Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  createdBy User         @relation("BookCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  borrows   BookBorrow[]
+
+  @@index([status, title])
+  @@index([createdById])
+}
+
+model BookBorrow {
+  id                 Int                 @id @default(autoincrement())
+  borrowCode         String              @unique
+  bookId             Int
+  userId             Int
+  status             BorrowStatus        @default(BORROWED)
+  paymentStatus      BorrowPaymentStatus @default(PAID)
+  paidAmount         Decimal             @db.Decimal(10, 2)
+  refundAmount       Decimal             @default(0) @db.Decimal(10, 2)
+  borrowedAt         DateTime            @default(now())
+  dueAt              DateTime?
+  returnRequestedAt  DateTime?
+  returnedAt         DateTime?
+  reviewedById       Int?
+  note               String?             @db.Text
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  book       Book  @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  user       User  @relation("BookBorrower", fields: [userId], references: [id], onDelete: Restrict)
+  reviewedBy User? @relation("BookBorrowReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([bookId, status])
+  @@index([status, createdAt])
+}
+
+model PointTransaction {
+  id           Int             @id @default(autoincrement())
+  userId       Int
+  type         PointType
+  points       Int
+  sourceType   PointSourceType
+  sourceRef    String?
+  description  String
+  balanceAfter Int
+  createdById  Int?
+  createdAt    DateTime        @default(now())
+
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdBy User? @relation("PointCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([sourceType, sourceRef])
+}
+
+model RewardCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  rewards   Reward[]
+}
+
+model Reward {
+  id          Int          @id @default(autoincrement())
+  name        String
+  slug        String       @unique
+  description String?      @db.Text
+  imageUrl    String?
+  categoryId  Int?
+  pointsCost  Int
+  stock       Int          @default(0)
+  status      RewardStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  category    RewardCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  redemptions RewardRedemption[]
+
+  @@index([status, pointsCost])
+}
+
+model RewardRedemption {
+  id            Int              @id @default(autoincrement())
+  userId        Int
+  rewardId      Int
+  pointsSpent   Int
+  status        RedemptionStatus @default(PENDING)
+  deliveryNote  String?
+  rejectionNote String?
+  reviewedById  Int?
+  requestedAt   DateTime         @default(now())
+  reviewedAt    DateTime?
+  deliveredAt   DateTime?
+
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward     Reward @relation(fields: [rewardId], references: [id], onDelete: Restrict)
+  reviewedBy User?  @relation("RedemptionReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, requestedAt])
+  @@index([userId, requestedAt])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tokenHash String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}

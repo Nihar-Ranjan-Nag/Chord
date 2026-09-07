@@ -1,0 +1,4 @@
+-- Rename the public management role from ORGANIZATION to ORGANIZER without losing accounts.
+ALTER TABLE `User` MODIFY `role` ENUM('USER','ORGANIZATION','ORGANIZER','ADMIN') NOT NULL DEFAULT 'USER';
+UPDATE `User` SET `role`='ORGANIZER' WHERE `role`='ORGANIZATION';
+ALTER TABLE `User` MODIFY `role` ENUM('USER','ORGANIZER','ADMIN') NOT NULL DEFAULT 'USER';
