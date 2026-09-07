@@ -15,16 +15,56 @@ import { Link } from 'react-router-dom'
 
 import { EventCard } from '@/components/cards/EventCard'
 
-import {
-  ApiError,
-  ApiLoading,
-} from '@/components/common/ApiState'
+import { ApiError } from '@/components/common/ApiState'
 
 import { useAsyncData } from '@/hooks/useAsyncData'
 
 import { api } from '@/services/api'
 
 import { mapEvent } from '@/services/mappers'
+
+function EventGridSkeleton() {
+  return (
+    <div
+      className="
+        grid
+        grid-cols-2
+        gap-2
+        min-[380px]:gap-2.5
+        sm:gap-4
+        lg:grid-cols-3
+        xl:grid-cols-4
+        xl:gap-5
+      "
+    >
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          key={index}
+          className="
+            overflow-hidden
+            rounded-2xl
+            border
+            border-white/[0.07]
+            bg-[#0a0e24]
+          "
+        >
+          <div className="aspect-[16/10] animate-pulse bg-white/[0.045]" />
+
+          <div className="space-y-3 p-3 sm:p-4">
+            <div className="h-4 w-3/4 animate-pulse rounded bg-white/[0.07]" />
+            <div className="h-3 w-full animate-pulse rounded bg-white/[0.045]" />
+            <div className="h-3 w-2/3 animate-pulse rounded bg-white/[0.045]" />
+
+            <div className="mt-4 flex items-center justify-between">
+              <div className="h-7 w-20 animate-pulse rounded-lg bg-violet-500/[0.08]" />
+              <div className="h-7 w-14 animate-pulse rounded-lg bg-white/[0.04]" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export function EventsPage() {
   const [search, setSearch] = useState('')
@@ -387,9 +427,7 @@ export function EventsPage() {
               EVENTS
           ================================================== */}
           {loading ? (
-            <div className="py-8">
-              <ApiLoading />
-            </div>
+            <EventGridSkeleton />
           ) : error ? (
             <div className="py-8">
               <ApiError
