@@ -2,11 +2,11 @@ import {
   Gift,
   PackageCheck,
   Sparkles,
-} from 'lucide-react'
+} from "lucide-react";
 
 type RewardCardProps = {
-  reward: any
-}
+  reward: any;
+};
 
 export function RewardCard({
   reward,
@@ -14,16 +14,17 @@ export function RewardCard({
   /* =========================================================
      SAFE REWARD VALUES
   ========================================================= */
+
   const title =
     reward?.title ||
     reward?.name ||
-    'Reward'
+    "Reward";
 
   const description =
     reward?.description ||
     reward?.shortDescription ||
     reward?.short_description ||
-    'Unlock this reward using your earned points.'
+    "Unlock this reward using your earned points.";
 
   const image =
     reward?.image ||
@@ -32,20 +33,22 @@ export function RewardCard({
     reward?.thumbnail ||
     reward?.thumbnailUrl ||
     reward?.thumbnail_url ||
-    ''
+    "";
 
   const category =
+    reward?.category?.name ||
     reward?.category ||
     reward?.type ||
-    'Reward'
+    "Reward";
 
   const points =
     reward?.points ||
+    reward?.pointsCost ||
     reward?.pointsRequired ||
     reward?.points_required ||
     reward?.requiredPoints ||
     reward?.required_points ||
-    0
+    0;
 
   const stock =
     reward?.stock ??
@@ -54,11 +57,11 @@ export function RewardCard({
     reward?.available_stock ??
     reward?.stockQuantity ??
     reward?.stock_quantity ??
-    null
+    null;
 
   const hasStock =
     stock === null ||
-    Number(stock) > 0
+    Number(stock) > 0;
 
   return (
     <article
@@ -73,7 +76,7 @@ export function RewardCard({
 
         overflow-hidden
 
-        rounded-xl
+        rounded-[1.35rem]
 
         border
         border-violet-500/[0.16]
@@ -84,17 +87,20 @@ export function RewardCard({
 
         shadow-[0_8px_25px_rgba(0,0,0,0.26)]
 
-        transition
+        transition-all
         duration-300
 
         hover:-translate-y-1
         hover:border-fuchsia-500/35
         hover:shadow-[0_15px_40px_rgba(135,45,255,0.16)]
 
-        sm:rounded-2xl
+        sm:rounded-[1.5rem]
       "
     >
-      {/* CARD GLOW */}
+      {/* =====================================================
+          CARD GLOW
+      ====================================================== */}
+
       <div
         className="
           pointer-events-none
@@ -106,76 +112,126 @@ export function RewardCard({
       />
 
       {/* =====================================================
-          IMAGE
-      ===================================================== */}
+          PRODUCT IMAGE
+      ====================================================== */}
+
       <div
         className="
           relative
 
-          h-[105px]
-
+          h-[155px]
           shrink-0
+
           overflow-hidden
 
           border-b
-          border-white/[0.05]
+          border-white/[0.06]
 
-          bg-gradient-to-br
-          from-[#161336]
-          via-[#10132d]
-          to-[#101a38]
+          bg-white
 
-          min-[380px]:h-[116px]
+          min-[380px]:h-[175px]
 
-          sm:h-[165px]
+          sm:h-[210px]
 
-          lg:h-48
+          md:h-[220px]
+
+          lg:h-[230px]
+
+          xl:h-[240px]
         "
       >
         {image ? (
           <>
-            <img
-              src={image}
-              alt={title}
-              className="
-                h-full
-                w-full
-
-                object-cover
-
-                transition
-                duration-500
-
-                group-hover:scale-105
-              "
-            />
+            {/* subtle image background */}
 
             <div
               className="
                 absolute
                 inset-0
 
+                bg-gradient-to-br
+                from-white
+                via-slate-50
+                to-violet-50/60
+              "
+            />
+
+            {/* PRODUCT */}
+
+            <img
+              src={image}
+              alt={title}
+              loading="lazy"
+              className="
+                relative
+                z-[1]
+
+                h-full
+                w-full
+
+                object-contain
+                object-center
+
+                p-2
+
+                transition-transform
+                duration-500
+
+                group-hover:scale-[1.03]
+
+                min-[380px]:p-2.5
+
+                sm:p-3
+
+                lg:p-4
+              "
+            />
+
+            {/* soft bottom fade */}
+
+            <div
+              className="
+                pointer-events-none
+
+                absolute
+                inset-x-0
+                bottom-0
+                z-[2]
+
+                h-12
+
                 bg-gradient-to-t
-                from-[#080b1d]/65
-                via-transparent
+                from-[#080b1d]/10
                 to-transparent
               "
             />
           </>
         ) : (
+          /* =====================================================
+              FALLBACK
+          ====================================================== */
+
           <div
             className="
               relative
+
               grid
               h-full
+
               place-items-center
+
+              bg-gradient-to-br
+              from-[#161336]
+              via-[#10132d]
+              to-[#101a38]
             "
           >
             <div
               className="
                 absolute
-                h-[60px]
-                w-[60px]
+
+                h-[90px]
+                w-[90px]
 
                 rounded-full
 
@@ -183,22 +239,23 @@ export function RewardCard({
 
                 blur-2xl
 
-                sm:h-[110px]
-                sm:w-[110px]
+                sm:h-[120px]
+                sm:w-[120px]
               "
             />
 
             <div
               className="
                 relative
+
                 grid
 
-                h-[44px]
-                w-[44px]
+                h-[58px]
+                w-[58px]
 
                 place-items-center
 
-                rounded-xl
+                rounded-2xl
 
                 border
                 border-violet-400/15
@@ -209,19 +266,19 @@ export function RewardCard({
 
                 shadow-[0_0_30px_rgba(139,92,246,0.15)]
 
-                sm:h-[72px]
-                sm:w-[72px]
-                sm:rounded-2xl
+                sm:h-[76px]
+                sm:w-[76px]
               "
             >
               <Gift
-                size={24}
                 className="
+                  size-7
+
                   text-violet-400
 
                   drop-shadow-[0_0_12px_rgba(139,92,246,0.55)]
 
-                  sm:size-[40px]
+                  sm:size-10
                 "
               />
             </div>
@@ -230,18 +287,17 @@ export function RewardCard({
 
         {/* =================================================
             STOCK BADGE
-        ================================================= */}
+        ================================================== */}
+
         {stock !== null && (
           <div
             className="
               absolute
-              left-1.5
-              top-1.5
+              left-2
+              top-2
+              z-10
 
-              max-w-[calc(100%-12px)]
-
-              min-[380px]:left-2
-              min-[380px]:top-2
+              max-w-[calc(100%-16px)]
 
               sm:left-3
               sm:top-3
@@ -249,83 +305,100 @@ export function RewardCard({
           >
             <span
               className={[
-                'inline-flex',
-                'max-w-full',
-                'items-center',
-                'gap-1',
-                'truncate',
-                'rounded-full',
-                'border',
-                'px-1.5',
-                'py-0.5',
-                'text-[6.5px]',
-                'font-extrabold',
-                'backdrop-blur-md',
-                'min-[380px]:px-2',
-                'min-[380px]:py-1',
-                'min-[380px]:text-[7.5px]',
-                'sm:px-3',
-                'sm:text-[10px]',
+                "inline-flex",
+                "max-w-full",
+                "items-center",
+                "gap-1.5",
+
+                "rounded-full",
+                "border",
+
+                "px-2.5",
+                "py-1",
+
+                "text-[8px]",
+                "font-extrabold",
+
+                "shadow-sm",
+                "backdrop-blur-md",
+
+                "sm:px-3",
+                "sm:py-1.5",
+                "sm:text-[10px]",
+
                 hasStock
-                  ? 'border-emerald-400/20 bg-emerald-500/10 text-emerald-300'
-                  : 'border-rose-400/20 bg-rose-500/10 text-rose-300',
-              ].join(' ')}
+                  ? "border-emerald-500/20 bg-white/90 text-emerald-600"
+                  : "border-rose-500/20 bg-white/90 text-rose-600",
+              ].join(" ")}
             >
               <PackageCheck
-                size={8}
-                className="sm:size-[11px]"
+                className="
+                  size-3
+                  shrink-0
+                "
               />
 
-              {hasStock
-                ? `${stock} In Stock`
-                : 'Out of Stock'}
+              <span className="truncate">
+                {hasStock
+                  ? `${stock} in stock`
+                  : "Out of stock"}
+              </span>
             </span>
           </div>
         )}
 
-        {/* MOBILE POINT BADGE */}
+        {/* =================================================
+            MOBILE POINT BADGE
+        ================================================== */}
+
         <div
           className="
             absolute
-            bottom-1.5
-            right-1.5
+            bottom-2
+            right-2
+            z-10
 
             flex
             items-center
-            gap-0.5
+            gap-1
 
             rounded-full
 
             border
             border-violet-400/20
 
-            bg-[#080b1d]/85
+            bg-[#080b1d]/90
 
-            px-1.5
-            py-0.5
+            px-2.5
+            py-1
 
-            text-[6.5px]
+            text-[8px]
             font-extrabold
 
-            text-violet-300
+            text-violet-200
 
+            shadow-lg
             backdrop-blur-md
 
             sm:hidden
           "
         >
           <Sparkles
-            size={7}
-            className="text-fuchsia-400"
+            className="
+              size-2.5
+
+              text-fuchsia-400
+            "
           />
 
-          {points}
+          {points} pts
         </div>
       </div>
 
       {/* =====================================================
           CONTENT
-      ===================================================== */}
+      ====================================================== */}
+
       <div
         className="
           relative
@@ -336,9 +409,9 @@ export function RewardCard({
           flex-1
           flex-col
 
-          p-2
+          p-3
 
-          min-[380px]:p-2.5
+          min-[380px]:p-3.5
 
           sm:p-4
 
@@ -346,18 +419,19 @@ export function RewardCard({
         "
       >
         {/* CATEGORY */}
+
         <p
           className="
             truncate
 
-            text-[6.5px]
+            text-[8px]
             font-extrabold
             uppercase
-            tracking-[0.1em]
+            tracking-[0.12em]
 
             text-fuchsia-400
 
-            min-[380px]:text-[7.5px]
+            min-[380px]:text-[9px]
 
             sm:text-[10px]
           "
@@ -366,25 +440,24 @@ export function RewardCard({
         </p>
 
         {/* TITLE */}
+
         <h3
           className="
-            mt-1
+            mt-1.5
 
             line-clamp-2
 
-            min-h-[31px]
+            min-h-[34px]
 
-            text-[10px]
+            text-[12px]
             font-extrabold
-            leading-[14px]
+            leading-[17px]
 
             text-white
 
-            min-[380px]:min-h-[34px]
-            min-[380px]:text-[11px]
-            min-[380px]:leading-[16px]
+            min-[380px]:text-[13px]
+            min-[380px]:leading-[18px]
 
-            sm:mt-1.5
             sm:min-h-0
             sm:text-base
             sm:leading-6
@@ -396,19 +469,20 @@ export function RewardCard({
         </h3>
 
         {/* DESCRIPTION */}
+
         <p
           className="
-            mt-1
+            mt-1.5
 
-            line-clamp-2
+            line-clamp-3
 
-            text-[7.5px]
-            leading-[12px]
+            text-[9px]
+            leading-[14px]
 
             text-slate-400
 
-            min-[380px]:text-[8.5px]
-            min-[380px]:leading-[13px]
+            min-[380px]:text-[10px]
+            min-[380px]:leading-[15px]
 
             sm:mt-2
             sm:text-xs
@@ -421,30 +495,37 @@ export function RewardCard({
           {description}
         </p>
 
+        {/* spacer */}
+
+        <div className="min-h-3 flex-1" />
+
         {/* =================================================
             FOOTER
-        ================================================= */}
+        ================================================== */}
+
         <div
           className="
-            mt-auto
+            mt-4
 
             flex
             min-w-0
+
             items-center
             justify-between
 
-            gap-1
+            gap-2
 
             border-t
             border-white/[0.06]
 
-            pt-2
+            pt-3
 
             sm:gap-3
             sm:pt-4
           "
         >
           {/* POINTS */}
+
           <span
             className="
               hidden
@@ -460,10 +541,10 @@ export function RewardCard({
 
               bg-violet-500/10
 
-              px-2
+              px-2.5
               py-1
 
-              text-[7px]
+              text-[8px]
               font-extrabold
 
               text-violet-300
@@ -479,39 +560,36 @@ export function RewardCard({
             "
           >
             <Sparkles
-              size={8}
               className="
+                size-2.5
+
                 text-fuchsia-400
 
-                sm:size-[13px]
+                sm:size-3.5
               "
             />
 
             {points}
 
-            <span
-              className="
-                hidden
-                min-[420px]:inline
-              "
-            >
+            <span className="hidden min-[420px]:inline">
               pts
             </span>
           </span>
 
           {/* TYPE */}
+
           <span
             className="
               ml-auto
 
               truncate
 
-              text-[7px]
+              text-[8px]
               font-bold
 
               text-slate-500
 
-              min-[380px]:text-[8px]
+              min-[380px]:text-[9px]
 
               sm:text-xs
             "
@@ -521,5 +599,5 @@ export function RewardCard({
         </div>
       </div>
     </article>
-  )
+  );
 }
